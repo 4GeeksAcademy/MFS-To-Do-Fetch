@@ -23,6 +23,22 @@ const Home = () => {
 		}
 	};
 
+	const eliminarTarea = async(id)=>{
+		try {
+			const response = await fetch(`https://playground.4geeks.com/todo/todos/${id}`,{
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" }
+			})
+			console.log(response)
+			if (response.status==204){
+				obtenerTareas()
+			}
+		} catch (error) {
+
+			console.log(error)
+		}
+	}
+
 	const obtenerTareas = async () => {
 		try {
 			const response = await fetch("https://playground.4geeks.com/todo/users/MartinF")
@@ -32,7 +48,10 @@ const Home = () => {
 				return
 			}
 			const data = await response.json()
-			console.log(data)
+
+			setLista(data.todos)
+			console.log(data.todos)
+
 		} catch (error) {
 			console.log(error)
 		}
@@ -49,9 +68,13 @@ const Home = () => {
 					"label": tarea,
 					"is_done": false
 				})
-
-			})
-				console.log(response)
+			});
+			//revisar IF!
+			if (response.ok) {
+				setTarea("");
+				obtenerTareas();
+			}
+			console.log(response)
 		} catch (error) {
 			console.log(error)
 		}
@@ -70,7 +93,23 @@ const Home = () => {
 				value={tarea}
 				onChange={(e) => setTarea(e.target.value)}
 			/>
-			<button className="btn btn-success" onClick={(e)=>agregarTarea(e)}>Crear </button>
+			<button className="btn btn-success" onClick={(e) => agregarTarea(e)}>Crear </button>
+			<ul className="list-group">
+				{lista.map((tarea) => (
+					<li className="list-group-item" key={tarea.id}>
+						{tarea.label}
+						<button className="btn btn-danger float-end" onClick={()=>eliminarTarea(tarea.id)}>
+							X
+						</button>
+
+					</li>
+				))}
+
+
+
+
+			</ul>
+
 		</div>
 	);
 };
